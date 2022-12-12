@@ -11,21 +11,32 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="django-insecure-4yr9(lwf4y0*+@q!gj0c5e0d(m3g-z=^cdn*v*huhvf=3bhzdx")
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
+DEV_TOOLS_ENABLED = env.bool("DJANGO_DEV_TOOLS_ENABLED", default=False)
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", True)
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:8000"])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:8000"])
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4yr9(lwf4y0*+@q!gj0c5e0d(m3g-z=^cdn*v*huhvf=3bhzdx'
+STATICFILES_STORAGE = env(
+    "STATICFILES_STORAGE",
+    default="django.contrib.staticfiles.storage.StaticFilesStorage",
+)
+STATIC_URL = "/static/"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ENVIRONMENT = env.str("PROJECT_ENVIRONMENT", default="DEV")
 
-ALLOWED_HOSTS = []
+env_file = os.path.join(BASE_DIR, "HomeManager/../.env")
+env.read_env(env_file)
 
 
 # Application definition
@@ -74,14 +85,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'HomeManager.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("POSTGRES_DB"),
+            "USER": env("POSTGRES_USER"),
+            "PASSWORD": env("POSTGRES_PASSWORD"),
+            "HOST": env("POSTGRES_HOST"),
+            "PORT": env("POSTGRES_PORT"),
     }
 }
 
@@ -117,12 +128,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

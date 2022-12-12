@@ -103,3 +103,6 @@ docker-compose.dev.yml
 .pytype/
 
 .idea/
+
+#data
+data/
