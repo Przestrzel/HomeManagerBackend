@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -59,6 +60,49 @@ INSTALLED_APPS = [
     #Local apps
     'users.apps.UsersConfig'
 ]
+
+#dj_rest_auth
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = "jwt-auth"
+OLD_PASSWORD_FIELD_ENABLED = True
+JWT_AUTH_COOKIE_USE_CSRF = True
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("dj_rest_auth.jwt_auth.JWTCookieAuthentication",)
+}
+
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": "users.serializers.UserDetailsSerializer",
+    "LOGIN_SERIALIZER": "users.serializers.LoginSerializer",
+}
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# django-allauth
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Set to mandatory when signup flow is ready
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env.int("ACCESS_TOKEN_LIFETIME_MINUTES", default=5)),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        minutes=env.int("REFRESH_TOKEN_LIFETIME_MINUTES", default=0),
+        days=env.int("REFRESH_TOKEN_LIFETIME_DAYS", default=1),
+    ),
+    "ROTATE_REFRESH_TOKENS": True,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

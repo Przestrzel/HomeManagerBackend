@@ -6,12 +6,12 @@ from dj_rest_auth.serializers import (
 )
 from rest_framework import serializers
 
-from users.models import Person
+from users.models import Person, Family
 
 
 class FamilySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Person
+        model = Family
         fields = ('family_name',)
 
 
@@ -31,7 +31,6 @@ class UserDetailsSerializer(RestAuthUserDetailsSerializer):
         read_only_fields = ("email",)
 
 
-class LoginSerializer(RestAuthLoginSerializer, ABC):
+class LoginSerializer(RestAuthLoginSerializer):
     username = None
     email = serializers.EmailField(required=True)
-
