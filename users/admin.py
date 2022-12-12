@@ -1,6 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
-from users.models import Person
+from users.models import Person, User, Family
 
 
 # Register your models here.
@@ -57,3 +58,9 @@ class CustomUserAdmin(UserAdmin):
 class PersonAdmin(admin.ModelAdmin):
     list_display = ["first_name", "last_name"]
     search_fields = ["first_name", "last_name"]
+
+
+@admin.register(Family)
+class FamilyAdmin(admin.ModelAdmin):
+    list_display = ["family_name"]
+    search_fields = ["family_name"]

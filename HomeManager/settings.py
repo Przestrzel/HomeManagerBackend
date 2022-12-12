@@ -46,13 +46,18 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #Third party apps
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
-    'users'
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    #Local apps
+    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -132,3 +137,5 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'users.User'
+SITE_ID = 1

@@ -1,7 +1,42 @@
 from django.db import models
+from typing import Any
+from allauth.account.models import EmailAddress
 from django.utils import timezone
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.utils.translation import gettext_lazy as _
+
+
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def create_superuser(self, email: str, password: str, **extra_fields: Any) -> "User":
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError(_("Superuser must have is_staff=True."))
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError(_("Superuser must have is_superuser=True."))
+
+        return self.create(email=email, password=password, **extra_fields)
+
+    def create(self, *args: Any, **kwargs: Any) -> "User":
+        if not (email := kwargs.pop("email", None)):
+            raise ValueError("Email must be set")
+        if not (password := kwargs.pop("password", None)):
+            raise ValueError("Password must be set")
+
+        user: User = self.model(email=email, **kwargs)
+        user.clean()
+        user.set_password(password)
+        user.save(using=self._db)
+
+        if "dj_rest_auth.registration" not in settings.INSTALLED_APPS or user.is_superuser:
+            EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
+
+        return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -26,7 +61,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: list[str] = []
-
     objects = UserManager()
 
     class Meta:
@@ -43,6 +77,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Family(models.Model):
     family_name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = _("family")
+        verbose_name_plural = _("families")
 
 
 class Person(models.Model):
