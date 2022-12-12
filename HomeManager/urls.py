@@ -6,3 +6,4 @@ urlpatterns = [
     path('auth/', include('dj_rest_auth.urls')),
 ]
 
+
