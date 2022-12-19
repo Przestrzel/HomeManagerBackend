@@ -78,6 +78,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def family(self) -> "Family":
         return self.person.family
 
+    @property
+    def first_name(self) -> str:
+        return self.person.first_name
+
+    @property
+    def last_name(self) -> str:
+        return self.person.last_name
+
 
 class Family(models.Model):
     family_name = models.CharField(max_length=100)
