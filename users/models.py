@@ -74,6 +74,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
 
+    @property
+    def family(self) -> "Family":
+        return self.person.family
+
 
 class Family(models.Model):
     family_name = models.CharField(max_length=100)

@@ -4,7 +4,10 @@ from django.db import models
 class ExpenseCategory(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=100)
-    family = models.ForeignKey('users.Family', on_delete=models.CASCADE)
+    family = models.ForeignKey('users.Family', on_delete=models.CASCADE, default=None, null=True)
+
+    class Meta:
+        verbose_name_plural = "Expense categories"
 
     def __str__(self):
         return self.name

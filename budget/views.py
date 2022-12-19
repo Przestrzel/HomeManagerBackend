@@ -1,11 +1,14 @@
-from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from budget.models import ExpenseCategory
+from budget.serializers import ExpenseCategorySerializer
+from utils.permissions import IsFamilyMember
 
 
-# Create your views here.
-
-class ExpenseCategoryViewSet(viewsets.ModelViewSet):
-    queryset = ExpenseCategory.objects.all()
+class ExpenseCategoryCreateView(CreateAPIView):
+    model = ExpenseCategory
+    permission_classes = [IsAuthenticated, IsFamilyMember]
     serializer_class = ExpenseCategorySerializer
+    queryset = ExpenseCategory.objects.all()
