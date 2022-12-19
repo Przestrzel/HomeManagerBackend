@@ -6,14 +6,7 @@ from budget.views import ExpenseCategoryViewSet, ExpenseViewSet
 app_name = "budget"
 
 router = routers.DefaultRouter()
+router.register(r"expenses/categories", ExpenseCategoryViewSet)
+router.register(r"expenses", ExpenseViewSet)
 
-urlpatterns = [
-    path("expenses/categories/", ExpenseCategoryViewSet.as_view({
-        'get': 'list',
-        'post': 'create',
-    }), name="expense-categories"),
-    path("expenses/", ExpenseViewSet.as_view({
-        'get': 'list',
-        'post': 'create'}), name="expenses"),
-    path("", include(router.urls)),
-]
+urlpatterns = router.urls
