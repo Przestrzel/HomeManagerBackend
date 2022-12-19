@@ -1,3 +1,24 @@
 from django.contrib import admin
-
+from budget.models import Budget, Expense, Income
 # Register your models here.
+
+
+@admin.register(Budget)
+class BudgetAdmin(admin.ModelAdmin):
+    list_display = ["family", "period"]
+    search_fields = ["family__family_name"]
+    ordering = ["-id"]
+
+
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    list_display = ["name", "amount", "date", "category", "user", "family"]
+    search_fields = ["name", "category__name", "user__email", "family__family_name"]
+    ordering = ["-id"]
+
+
+@admin.register(Income)
+class IncomeAdmin(admin.ModelAdmin):
+    list_display = ["name", "amount", "date", "user", "family"]
+    search_fields = ["name", "user__email", "family__family_name"]
+    ordering = ["-id"]
