@@ -1,5 +1,3 @@
-from abc import ABC
-
 from dj_rest_auth.serializers import (
     UserDetailsSerializer as RestAuthUserDetailsSerializer,
     LoginSerializer as RestAuthLoginSerializer

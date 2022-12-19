@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'djangorestframework_camel_case',
     #Local apps
-    'users.apps.UsersConfig'
+    'users.apps.UsersConfig',
+    'budget.apps.BudgetConfig',
 ]
 
 #dj_rest_auth
