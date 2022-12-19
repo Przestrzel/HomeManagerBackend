@@ -1,14 +1,16 @@
 from rest_framework import routers
 from django.urls import path, include
 
-from budget.views import ExpenseCategoryCreateView
+from budget.views import ExpenseCategoryViewSet
 
 app_name = "budget"
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path("expenses/create-category/", ExpenseCategoryCreateView.as_view(), name="expense-category-create"),
-    path("expenses/list-categories/", ExpenseCategoryCreateView.as_view(), name="expense-category-list"),
+    path("expenses/categories/", ExpenseCategoryViewSet.as_view({
+        'get': 'list',
+        'post': 'create',
+    }), name="expense-categories"),
     path("", include(router.urls)),
 ]
