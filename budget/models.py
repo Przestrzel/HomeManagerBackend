@@ -52,6 +52,7 @@ class Budget(models.Model):
         MONTH = "MONTH"
         YEAR = "YEAR"
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default=None, null=True)
+    description = models.CharField(max_length=100, default=None, null=True)
     family = models.ForeignKey('users.Family', on_delete=models.CASCADE)
     period = models.CharField(max_length=5, choices=Period.choices, default=Period.MONTH)
