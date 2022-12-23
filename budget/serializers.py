@@ -1,6 +1,6 @@
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
-from budget.models import ExpenseCategory, Expense, Income
+from budget.models import ExpenseCategory, Expense, Income, Budget, PlannedExpense
 from users import serializers
 from users.models import User, Family
 
@@ -55,3 +55,24 @@ class IncomeSerializer(ModelSerializer):
 
 class IncomeCreateSerializer(IncomeSerializer):
     family = PrimaryKeyRelatedField(queryset=Family.objects.all())
+
+
+class PlannedExpenseSerializer(ModelSerializer):
+    category = ExpenseCategoryWithoutFamilySerializer()
+
+    class Meta:
+        model = PlannedExpense
+        fields = '__all__'
+
+
+class PlannedExpenseCreateSerializer(ModelSerializer):
+    class Meta:
+        model = PlannedExpense
+        fields = '__all__'
+
+
+class BudgetSerializer(ModelSerializer):
+
+    class Meta:
+        model = Budget
+        fields = '__all__'

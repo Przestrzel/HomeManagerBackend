@@ -2,9 +2,9 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from budget.models import ExpenseCategory, Expense, Income
+from budget.models import ExpenseCategory, Expense, Income, Budget, PlannedExpense
 from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer, IncomeSerializer, ExpenseCreateSerializer, \
-    IncomeCreateSerializer
+    IncomeCreateSerializer, BudgetSerializer, PlannedExpenseSerializer, PlannedExpenseCreateSerializer
 from utils.permissions import IsFamilyMember
 
 
@@ -70,3 +70,26 @@ class IncomeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+    permission_classes = [IsAuthenticated, IsFamilyMember]
+    pagination_class = None
+
+
+class PlannedExpenseViewSet(viewsets.ModelViewSet):
+    queryset = PlannedExpense.objects.all()
+    serializer_classes = {
+        "list": PlannedExpenseSerializer,
+        "retrieve": PlannedExpenseSerializer,
+        "create": PlannedExpenseCreateSerializer,
+        "update": PlannedExpenseSerializer
+    }
+    default_serializer_class = PlannedExpenseSerializer
+    permission_classes = [IsAuthenticated, IsFamilyMember]
+    pagination_class = None
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)

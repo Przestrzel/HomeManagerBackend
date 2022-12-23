@@ -35,9 +35,7 @@ class Income(models.Model):
     def __str__(self):
         return self.name
 
-# Might change it in the future
-# Could be a good idea to plan income
-# It probably should be done by Celery
+
 class PlannedExpense(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(ExpenseCategory, on_delete=models.CASCADE, related_name="planned_expenses")
