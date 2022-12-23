@@ -46,8 +46,12 @@ class ExpenseCreateSerializer(ExpenseSerializer):
 
 class IncomeSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
-    family = FamilySerializer(read_only=True)
+    family = FamilySerializer()
 
     class Meta:
         model = Income
         fields = '__all__'
+
+
+class IncomeCreateSerializer(IncomeSerializer):
+    family = PrimaryKeyRelatedField(queryset=Family.objects.all())

@@ -3,7 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from budget.models import ExpenseCategory, Expense, Income
-from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer, IncomeSerializer, ExpenseCreateSerializer
+from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer, IncomeSerializer, ExpenseCreateSerializer, \
+    IncomeCreateSerializer
 from utils.permissions import IsFamilyMember
 
 
@@ -47,5 +48,25 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
 class IncomeViewSet(viewsets.ModelViewSet):
     queryset = Income.objects.all()
-    serializer_class = IncomeSerializer
+    serializer_classes = {
+        "list": IncomeSerializer,
+        "retrieve": IncomeSerializer,
+        "create": IncomeCreateSerializer,
+        "update": IncomeSerializer
+    }
+    default_serializer_class = IncomeSerializer
     permission_classes = [IsAuthenticated, IsFamilyMember]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        is_destroying_own_expense = request.user.family.filter(id=instance.family.id).exists()
+        if not is_destroying_own_expense:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
