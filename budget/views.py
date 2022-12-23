@@ -1,10 +1,12 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from budget.models import ExpenseCategory, Expense, Income, Budget, PlannedExpense
 from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer, IncomeSerializer, ExpenseCreateSerializer, \
-    IncomeCreateSerializer, BudgetSerializer, PlannedExpenseSerializer, PlannedExpenseCreateSerializer
+    IncomeCreateSerializer, BudgetSerializer, PlannedExpenseSerializer, PlannedExpenseCreateSerializer, \
+    RevenueRequestSerializer, RevenueResponseSerializer
 from utils.permissions import IsFamilyMember
 
 
@@ -93,3 +95,33 @@ class PlannedExpenseViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, IsFamilyMember])
+def get_incomes_and_outcomes(request):
+    request_data = RevenueRequestSerializer(data=request.data)
+    request_data.is_valid(raise_exception=True)
+    data = request_data.validated_data
+    budget = data["budget"]
+    date = data["date"]
+    # Get different periods of time
+    incomes = Income.objects.filter(family=budget.family, date__month=date.month, date__year=date.year)
+    expenses = Expense.objects.filter(family=budget.family, date__month=date.month, date__year=date.year)
+    planned_expenses = PlannedExpense.objects.filter(budget=budget)
+    revenue = sum([income.amount for income in incomes])
+    expenses_dict = dict()
+    for expense in expenses:
+        if expense.category.name not in expenses_dict:
+            expenses_dict[expense.category.name] = dict({"amount": 0, "planned_amount": 0})
+        expenses_dict[expense.category.name]['amount'] += expense.amount
+
+    for expense in planned_expenses:
+        if expense.category.name not in expenses_dict:
+            expenses_dict[expense.category.name] = dict({"amount": 0, "planned_amount": 0})
+        expenses_dict[expense.category.name]['planned_amount'] += expense.amount
+
+    expenses_serializer = RevenueResponseSerializer(data={"expenses": expenses_dict, "revenue": revenue})
+    expenses_serializer.is_valid(raise_exception=True)
+
+    return Response(expenses_serializer.validated_data, status=status.HTTP_200_OK)

@@ -45,12 +45,13 @@ class PlannedExpense(models.Model):
         return self.category.name
 
 
-class Budget(models.Model):
+class Period(models.TextChoices):
+    WEEK = "WEEK"
+    MONTH = "MONTH"
+    YEAR = "YEAR"
 
-    class Period(models.TextChoices):
-        WEEK = "WEEK"
-        MONTH = "MONTH"
-        YEAR = "YEAR"
+
+class Budget(models.Model):
 
     name = models.CharField(max_length=100, default=None, null=True)
     description = models.CharField(max_length=100, default=None, null=True)

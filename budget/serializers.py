@@ -1,7 +1,7 @@
+from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.serializers import ModelSerializer
-from budget.models import ExpenseCategory, Expense, Income, Budget, PlannedExpense
-from users import serializers
+from rest_framework.serializers import ModelSerializer, Serializer
+from budget.models import ExpenseCategory, Expense, Income, Budget, PlannedExpense, Period
 from users.models import User, Family
 
 
@@ -76,3 +76,37 @@ class BudgetSerializer(ModelSerializer):
     class Meta:
         model = Budget
         fields = '__all__'
+
+
+class RevenueRequestSerializer(Serializer):
+    period = serializers.ChoiceField(choices=Period.choices, default=Period.MONTH)
+    date = serializers.DateTimeField(format="%Y-%m-%d")
+    budget = PrimaryKeyRelatedField(queryset=Budget.objects.all())
+
+    def create(self, validated_data):
+        return None
+
+    def update(self, instance, validated_data):
+        return None
+
+
+class RevenueByCategorySerializer(Serializer):
+    amount = serializers.FloatField()
+    planned_amount = serializers.FloatField()
+
+    def create(self, validated_data):
+        return None
+
+    def update(self, instance, validated_data):
+        return None
+
+
+class RevenueResponseSerializer(Serializer):
+    revenue = serializers.FloatField()
+    expenses = serializers.DictField(child=RevenueByCategorySerializer())
+
+    def create(self, validated_data):
+        return None
+
+    def update(self, instance, validated_data):
+        return None
