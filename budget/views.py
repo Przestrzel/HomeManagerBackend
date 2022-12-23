@@ -2,8 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from budget.models import ExpenseCategory, Expense
-from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer
+from budget.models import ExpenseCategory, Expense, Income
+from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer, IncomeSerializer, ExpenseCreateSerializer
 from utils.permissions import IsFamilyMember
 
 
@@ -16,8 +16,17 @@ class ExpenseCategoryViewSet(viewsets.ModelViewSet):
 
 class ExpenseViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
-    serializer_class = ExpenseSerializer
+    serializer_classes = {
+        "list": ExpenseSerializer,
+        "retrieve": ExpenseSerializer,
+        "create": ExpenseCreateSerializer,
+        "update": ExpenseSerializer
+    }
+    default_serializer_class = ExpenseSerializer
     permission_classes = [IsAuthenticated, IsFamilyMember]
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def check_permissions(self, request):
         if request.method == "DELETE":
@@ -32,4 +41,11 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
+
+class IncomeViewSet(viewsets.ModelViewSet):
+    queryset = Income.objects.all()
+    serializer_class = IncomeSerializer
+    permission_classes = [IsAuthenticated, IsFamilyMember]
