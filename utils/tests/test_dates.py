@@ -27,4 +27,11 @@ def test_get_month_range():
 def test_get_year_range():
     date = datetime.date(2021, 1, 1)
     date_service = DateService(date, Period.YEAR)
-    assert date_service.get_range() == [datetime.date(2021, 1, 1), datetime.date(2021, 12, 30)]
+    assert date_service.get_range() == [datetime.date(2021, 1, 1), datetime.date(2021, 12, 31)]
+
+
+def test_get_range_raises_type_error():
+    date = datetime.date(2021, 1, 1)
+    date_service = DateService(date, 'DIFFERENT PERIOD')
+    with pytest.raises(ValueError):
+        date_service.get_range()
