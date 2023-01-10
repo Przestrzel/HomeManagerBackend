@@ -7,6 +7,7 @@ from budget.models import ExpenseCategory, Expense, Income, Budget, PlannedExpen
 from budget.serializers import ExpenseCategorySerializer, ExpenseSerializer, IncomeSerializer, ExpenseCreateSerializer, \
     IncomeCreateSerializer, BudgetSerializer, PlannedExpenseSerializer, PlannedExpenseCreateSerializer, \
     RevenueRequestSerializer, RevenueResponseSerializer
+from utils.dates import DateService
 from utils.permissions import IsFamilyMember
 
 
@@ -105,9 +106,10 @@ def get_incomes_and_outcomes(request):
     data = request_data.validated_data
     budget = data["budget"]
     date = data["date"]
-    # Get different periods of time
-    incomes = Income.objects.filter(family=budget.family, date__month=date.month, date__year=date.year)
-    expenses = Expense.objects.filter(family=budget.family, date__month=date.month, date__year=date.year)
+    period = data["period"]
+    date_range = DateService(date, period).get_range()
+    incomes = Income.objects.filter(family=budget.family, date__range=date_range)
+    expenses = Expense.objects.filter(family=budget.family, date__range=date_range)
     planned_expenses = PlannedExpense.objects.filter(budget=budget)
     revenue = sum([income.amount for income in incomes])
     expenses_dict = dict()
