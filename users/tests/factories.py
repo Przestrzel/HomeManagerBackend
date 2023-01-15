@@ -32,7 +32,6 @@ class PersonFactory(DjangoModelFactory):
             return
 
         for family in extracted:
-            print(extracted)
             self.family.add(family)
 
 
