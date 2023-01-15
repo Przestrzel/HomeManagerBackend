@@ -1,13 +1,13 @@
 import pytest
 from rest_framework.test import APIClient
-
 from users.models import User
-from users.tests.factories import UserFactory
+from users.tests.factories import UserFactory, FamilyFactory
 
 
 @pytest.fixture
 def user() -> User:
-    ret_user: User = UserFactory.create()
+    family = FamilyFactory()
+    ret_user: User = UserFactory.create(person__family=[family])
     return ret_user
 
 
