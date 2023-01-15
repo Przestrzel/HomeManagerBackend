@@ -8,25 +8,25 @@ from users.models import User, Family
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name')
+        fields = ("id", "first_name", "last_name")
 
 
 class FamilySerializer(ModelSerializer):
     class Meta:
         model = Family
-        fields = ('id', 'family_name')
+        fields = ("id", "family_name")
 
 
 class ExpenseCategorySerializer(ModelSerializer):
     class Meta:
         model = ExpenseCategory
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ExpenseCategoryWithoutFamilySerializer(ExpenseCategorySerializer):
     class Meta:
         model = ExpenseCategory
-        exclude = ('family',)
+        exclude = ("family",)
 
 
 class ExpenseSerializer(ModelSerializer):
@@ -36,7 +36,7 @@ class ExpenseSerializer(ModelSerializer):
 
     class Meta:
         model = Expense
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ExpenseCreateSerializer(ExpenseSerializer):
@@ -50,7 +50,7 @@ class IncomeSerializer(ModelSerializer):
 
     class Meta:
         model = Income
-        fields = '__all__'
+        fields = "__all__"
 
 
 class IncomeCreateSerializer(IncomeSerializer):
@@ -62,20 +62,19 @@ class PlannedExpenseSerializer(ModelSerializer):
 
     class Meta:
         model = PlannedExpense
-        fields = '__all__'
+        fields = "__all__"
 
 
 class PlannedExpenseCreateSerializer(ModelSerializer):
     class Meta:
         model = PlannedExpense
-        fields = '__all__'
+        fields = "__all__"
 
 
 class BudgetSerializer(ModelSerializer):
-
     class Meta:
         model = Budget
-        fields = '__all__'
+        fields = "__all__"
 
 
 class RevenueRequestSerializer(Serializer):
@@ -102,7 +101,7 @@ class RevenueByCategorySerializer(Serializer):
 
 
 class RevenueResponseSerializer(Serializer):
-    revenue = serializers.FloatField()
+    income = serializers.FloatField()
     expenses = serializers.DictField(child=RevenueByCategorySerializer())
 
     def create(self, validated_data):

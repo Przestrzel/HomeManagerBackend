@@ -120,7 +120,7 @@ def get_incomes_and_outcomes(request):
     incomes = Income.objects.filter(family=budget.family, date__range=date_range)
     expenses = Expense.objects.filter(family=budget.family, date__range=date_range)
     planned_expenses = PlannedExpense.objects.filter(budget=budget)
-    revenue = sum([income.amount for income in incomes])
+    income = sum([income.amount for income in incomes])
     expenses_dict = dict()
     for expense in expenses:
         if expense.category.name not in expenses_dict:
@@ -131,9 +131,9 @@ def get_incomes_and_outcomes(request):
         if expense.category.name not in expenses_dict:
             expenses_dict[expense.category.name] = dict({"amount": 0, "planned_amount": 0})
         expenses_dict[expense.category.name]["planned_amount"] += expense.amount
-    print("exp", planned_expenses)
+
     expenses_serializer = RevenueResponseSerializer(
-        data={"expenses": expenses_dict, "revenue": revenue}
+        data={"expenses": expenses_dict, "income": income}
     )
     expenses_serializer.is_valid(raise_exception=True)
 
