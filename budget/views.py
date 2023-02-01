@@ -28,7 +28,6 @@ class ExpenseCategoryViewSet(viewsets.ModelViewSet):
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
-    queryset = Expense.objects.all()
     serializer_classes = {
         "list": ExpenseSerializer,
         "retrieve": ExpenseSerializer,
@@ -37,6 +36,13 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     }
     default_serializer_class = ExpenseSerializer
     permission_classes = [IsAuthenticated, IsFamilyMember]
+
+    def get_queryset(self):
+        return (
+            Expense.objects.filter(family=self.request.user.family)
+            .select_related("user, category, family")
+            .all()
+        )
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
@@ -59,7 +65,6 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
-    queryset = Income.objects.all()
     serializer_classes = {
         "list": IncomeSerializer,
         "retrieve": IncomeSerializer,
@@ -68,6 +73,13 @@ class IncomeViewSet(viewsets.ModelViewSet):
     }
     default_serializer_class = IncomeSerializer
     permission_classes = [IsAuthenticated, IsFamilyMember]
+
+    def get_queryset(self):
+        return (
+            Income.objects.filter(family=self.request.user.family)
+            .select_related("user, family")
+            .all()
+        )
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -92,7 +104,6 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
 
 class PlannedExpenseViewSet(viewsets.ModelViewSet):
-    queryset = PlannedExpense.objects.all()
     serializer_classes = {
         "list": PlannedExpenseSerializer,
         "retrieve": PlannedExpenseSerializer,
@@ -102,6 +113,13 @@ class PlannedExpenseViewSet(viewsets.ModelViewSet):
     default_serializer_class = PlannedExpenseSerializer
     permission_classes = [IsAuthenticated, IsFamilyMember]
     pagination_class = None
+
+    def get_queryset(self):
+        return (
+            PlannedExpense.objects.filter(budget__family=self.request.user.family)
+            .select_related("category")
+            .all()
+        )
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
