@@ -1,6 +1,6 @@
 from dj_rest_auth.serializers import (
     UserDetailsSerializer as RestAuthUserDetailsSerializer,
-    LoginSerializer as RestAuthLoginSerializer
+    LoginSerializer as RestAuthLoginSerializer,
 )
 from rest_framework import serializers
 
@@ -10,7 +10,7 @@ from users.models import Person, Family
 class FamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = Family
-        fields = ('family_name',)
+        fields = ("family_name",)
 
 
 class PersonSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('first_name', 'last_name', 'date_of_birth', 'family')
+        fields = ("first_name", "last_name", "date_of_birth", "family")
 
 
 class UserDetailsSerializer(RestAuthUserDetailsSerializer):

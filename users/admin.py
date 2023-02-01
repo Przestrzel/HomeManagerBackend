@@ -10,7 +10,12 @@ class CustomUserAdmin(UserAdmin):
     list_display = ["email", "is_active"]
     list_filter = ["groups", "is_active"]
     readonly_fields = ["date_joined", "last_login"]
-    search_fields = ["email", "person__first_name", "person__last_name", "person__family__family_name"]
+    search_fields = [
+        "email",
+        "person__first_name",
+        "person__last_name",
+        "person__family__family_name",
+    ]
     ordering = ["-id"]
 
     add_fieldsets = (

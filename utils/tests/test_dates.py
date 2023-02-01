@@ -32,6 +32,6 @@ def test_get_year_range():
 
 def test_get_range_raises_type_error():
     date = datetime.date(2021, 1, 1)
-    date_service = DateService(date, 'DIFFERENT PERIOD')
+    date_service = DateService(date, "DIFFERENT PERIOD")
     with pytest.raises(ValueError):
         date_service.get_range()
