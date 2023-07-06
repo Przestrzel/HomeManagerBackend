@@ -32,7 +32,6 @@ class ExpenseCategoryWithoutFamilySerializer(ExpenseCategorySerializer):
 class ExpenseSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
     category = ExpenseCategoryWithoutFamilySerializer()
-    family = FamilySerializer()
 
     class Meta:
         model = Expense
@@ -41,12 +40,10 @@ class ExpenseSerializer(ModelSerializer):
 
 class ExpenseCreateSerializer(ExpenseSerializer):
     category = PrimaryKeyRelatedField(queryset=ExpenseCategory.objects.all())
-    family = PrimaryKeyRelatedField(queryset=Family.objects.all())
 
 
 class IncomeSerializer(ModelSerializer):
     user = UserSerializer(read_only=True)
-    family = FamilySerializer()
 
     class Meta:
         model = Income

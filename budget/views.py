@@ -21,10 +21,13 @@ from utils.permissions import IsFamilyMember
 
 
 class ExpenseCategoryViewSet(viewsets.ModelViewSet):
-    queryset = ExpenseCategory.objects.all()
     serializer_class = ExpenseCategorySerializer
     permission_classes = [IsAuthenticated, IsFamilyMember]
     pagination_class = None
+
+    def get_queryset(self):
+        family_id = self.request.COOKIES.get("X-Family-Id")
+        return ExpenseCategory.objects.filter(family=family_id).all()
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
@@ -38,11 +41,8 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsFamilyMember]
 
     def get_queryset(self):
-        return (
-            Expense.objects.filter(family=self.request.user.family)
-            .select_related("user, category, family")
-            .all()
-        )
+        family_id = self.request.COOKIES.get("X-Family-Id")
+        return Expense.objects.filter(family=family_id).select_related("category, user").all()
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
@@ -61,7 +61,8 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        family_id = self.request.COOKIES.get("X-Family-Id")
+        serializer.save(user=self.request.user, family=family_id)
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
@@ -75,11 +76,8 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsFamilyMember]
 
     def get_queryset(self):
-        return (
-            Income.objects.filter(family=self.request.user.family)
-            .select_related("user, family")
-            .all()
-        )
+        family_id = self.request.COOKIES.get("X-Family-Id")
+        return Income.objects.filter(family=family_id).select_related("user, family").all()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -88,6 +86,14 @@ class IncomeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        request = self.request
+        family_id = request.COOKIES.get("X-Family-Id")
+        request.family = family_id
+        context.update({"request": request})
+        return context
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
@@ -115,10 +121,9 @@ class PlannedExpenseViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
+        family_id = self.request.COOKIES.get("X-Family-Id")
         return (
-            PlannedExpense.objects.filter(budget__family=self.request.user.family)
-            .select_related("category")
-            .all()
+            PlannedExpense.objects.filter(budget__family=family_id).select_related("category").all()
         )
 
     def get_serializer_class(self):

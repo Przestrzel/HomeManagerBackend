@@ -12,11 +12,11 @@ class IsFamilyMember(BasePermission):
 
     def has_permission(self, request, view):
         try:
-            data = request.query_params if request.method == "GET" else request.data
-            request_serializer = FamilyRequiredSerializer(data=data)
+            family_id = request.COOKIES.get("X-Family-Id")
+            request_serializer = FamilyRequiredSerializer(data={"family": family_id})
             request_serializer.is_valid(raise_exception=True)
         except ValidationError:
-            self.message = "Family id must be provided"
+            self.message = "Family id must be provided by X-Family-Id"
             return False
         family = request_serializer.validated_data["family"]
         return User.objects.get(id=request.user.id).family.filter(id=family).exists()
